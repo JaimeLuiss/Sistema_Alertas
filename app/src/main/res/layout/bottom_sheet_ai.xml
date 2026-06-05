@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="24dp"
+        android:background="#E0E0E0" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Asistente Académico IA 🧠"
+        android:textColor="#1A237E"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="¡Hola! Soy tu asistente inteligente. Selecciona una pregunta para analizar tu rendimiento actual:"
+        android:textColor="#757575"
+        android:textSize="14sp" />
+
+    <!-- Preguntas de ejemplo -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnQuestionRisk"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="¿En que materia estoy en riesgo?"
+        android:textAlignment="viewStart"
+        android:textAllCaps="false"
+        app:cornerRadius="12dp"
+        app:strokeColor="#E8EAF6" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnQuestionImprove"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="¿Cómo mejorar mi nota?"
+        android:textAlignment="viewStart"
+        android:textAllCaps="false"
+        app:cornerRadius="12dp"
+        app:strokeColor="#E8EAF6" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnQuestionAttention"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="¿Qué materia requiere más atención?"
+        android:textAlignment="viewStart"
+        android:textAllCaps="false"
+        app:cornerRadius="12dp"
+        app:strokeColor="#E8EAF6" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnQuestionMath"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="¿Cuánto necesito sacar para aprobar?"
+        android:textAlignment="viewStart"
+        android:textAllCaps="false"
+        app:cornerRadius="12dp"
+        app:strokeColor="#E8EAF6" />
+
+    <!-- Área de respuesta de la IA (Inicialmente vacía) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardAiResponse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="#F0F4FF"
+        app:cardCornerRadius="16dp"
+        app:strokeWidth="0dp">
+
+        <TextView
+            android:id="@+id/tvAiResponse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="..."
+            android:textColor="#303F9F"
+            android:textSize="14sp"
+            android:lineSpacingExtra="4dp" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>
