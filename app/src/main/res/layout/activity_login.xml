@@ -32,7 +32,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Tarjeta de Login -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardLogin"
         android:layout_width="0dp"
@@ -52,9 +51,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@android:color/white"
             android:orientation="vertical"
-            android:padding="28dp"
-            android:background="@android:color/white">
+            android:padding="28dp">
 
             <!-- Encabezado -->
             <TextView
@@ -69,32 +68,52 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Ingresa con tu correo institucional"
+                android:text="Ingresa solo tu ID de usuario"
                 android:textColor="#757575"
                 android:textSize="14sp" />
 
             <!-- Correo -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilEmail"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:hint="Correo institucional"
-                app:boxCornerRadiusTopStart="16dp"
-                app:boxCornerRadiusTopEnd="16dp"
-                app:boxCornerRadiusBottomStart="16dp"
-                app:boxCornerRadiusBottomEnd="16dp"
-                app:startIconDrawable="@android:drawable/ic_dialog_email">
+                android:layout_marginTop="24dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etEmail"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilEmail"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
-                    android:maxLines="1" />
+                    android:textColorHint="#757575"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxStrokeColor="#64B5F6"
+                    app:hintEnabled="false"
+                    app:startIconDrawable="@android:drawable/ic_dialog_email"
+                    app:startIconTint="#757575">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:paddingEnd="110dp"
+                        android:textColor="#212121" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/unab_suffix"
+                    android:textColor="#757575"
+                    android:textSize="16sp" />
+
+            </FrameLayout>
 
             <!-- Contraseña -->
             <com.google.android.material.textfield.TextInputLayout
@@ -104,19 +123,25 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="Contraseña"
-                app:boxCornerRadiusTopStart="16dp"
-                app:boxCornerRadiusTopEnd="16dp"
-                app:boxCornerRadiusBottomStart="16dp"
+                android:textColorHint="#757575"
                 app:boxCornerRadiusBottomEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxStrokeColor="#64B5F6"
                 app:endIconMode="password_toggle"
-                app:startIconDrawable="@android:drawable/ic_lock_lock">
+                app:endIconTint="#757575"
+                app:hintTextColor="#64B5F6"
+                app:startIconDrawable="@android:drawable/ic_lock_lock"
+                app:startIconTint="#757575">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
-                    android:maxLines="1" />
+                    android:maxLines="1"
+                    android:textColor="#212121" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -125,10 +150,10 @@
                 android:id="@+id/tvForgotPassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
+                android:layout_gravity="start"
                 android:layout_marginTop="12dp"
-                android:text="¿Olvidaste tu contraseña?"
-                android:textColor="#3F51B5"
+                android:text="@string/forgot_password"
+                android:textColor="#64B5F6"
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
@@ -142,21 +167,16 @@
                 android:text="Iniciar Sesión"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
+                android:textColorLink="#00FFFFFF"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:cornerRadius="18dp"
                 app:icon="@android:drawable/ic_media_play"
                 app:iconGravity="textStart"
-                app:iconPadding="8dp" />
+                app:iconPadding="8dp"
+                app:iconTint="@android:color/white" />
 
             <!-- Indicador de carga -->
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:visibility="gone" />
 
         </LinearLayout>
 

@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="12dp"
     app:cardCornerRadius="24dp"
-    app:cardElevation="8dp"
+    app:cardElevation="6dp"
     app:cardBackgroundColor="@android:color/white"
     app:strokeColor="#EAEAEA"
     app:strokeWidth="1dp">
@@ -24,15 +24,34 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tvCourseName"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Fundamentos de programación"
-                android:textColor="#212121"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvCourseName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Fundamentos de programación"
+                    android:textColor="#212121"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvCredits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:background="@drawable/bg_credit_badge"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="3 créditos"
+                    android:textColor="#FF6B00"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvGrade"
@@ -44,7 +63,7 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Barra de progreso -->
+        <!-- Barra de progreso (Asistencia) -->
         <ProgressBar
             android:id="@+id/progressCourse"
             style="?android:attr/progressBarStyleHorizontal"
@@ -55,21 +74,12 @@
             android:progress="65"
             android:progressTint="#FF6B00" />
 
-        <!-- Avance -->
         <TextView
             android:id="@+id/tvProgress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Avance del curso: 65%"
-            android:textColor="#757575"
-            android:textSize="13sp" />
-        <TextView
-            android:id="@+id/tvPeriodo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Periodo 2026-1"
+            android:text="Asistencia: 65%"
             android:textColor="#757575"
             android:textSize="13sp" />
 
@@ -84,27 +94,82 @@
             android:textSize="15sp"
             android:textStyle="bold" />
 
-        <!-- Recomendación -->
-        <TextView
-            android:id="@+id/tvRecommendation"
-            android:layout_width="wrap_content"
+        <!-- Botón para solicitar Recomendación IA -->
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="Asistir a tutorías y reforzar ejercicios."
-            android:textColor="#616161"
-            android:textSize="13sp" />
+            android:layout_marginTop="16dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAiRecommendation"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:backgroundTint="#F8F9FF"
+                android:text="Consultar Recomendación IA 🧠"
+                android:textAllCaps="false"
+                android:textColor="#3F51B5"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:cornerRadius="16dp"
+                app:iconGravity="textStart"
+                app:iconPadding="12dp"
+                app:iconTint="#3F51B5"
+                app:strokeColor="#E8EAF6"
+                app:strokeWidth="1dp" />
+
+        </FrameLayout>
+
+        <!-- Recomendación IA (Inicialmente oculta) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/layoutAiRecommendation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="#F0F4FF"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeColor="#D1D9FF"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🧠 Recomendación Inteligente"
+                    android:textColor="#1A237E"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.05" />
+
+                <TextView
+                    android:id="@+id/tvRecommendation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textColor="#303F9F"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="4dp" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Link a Bienestar -->
         <TextView
             android:id="@+id/tvWellnessLink"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Agenda tu cita aquí"
+            android:layout_marginTop="12dp"
+            android:text="Agenda tu cita de acompañamiento"
             android:textColor="#FF6B00"
             android:textSize="13sp"
-            android:textStyle="bold"
-            android:autoLink="web" />
+            android:textStyle="bold" />
 
         <!-- Botones principales -->
         <LinearLayout
@@ -142,20 +207,9 @@
                 app:strokeWidth="1dp" />
         </LinearLayout>
 
-        <!-- Botón volver -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnBack"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="16dp"
-            android:backgroundTint="#F5F5F5"
-            android:text="Volver"
-            android:textAllCaps="false"
-            android:textColor="#616161"
-            android:textStyle="bold"
-            app:cornerRadius="14dp"
-            app:strokeColor="#DADADA"
-            app:strokeWidth="1dp" />
+        <!-- Botones ocultos por compatibilidad -->
+        <TextView android:id="@+id/tvPeriodo" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/btnBack" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
 
     </LinearLayout>
 

@@ -1,239 +1,286 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
+        android:id="@+id/mainScrollView"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#F4F7F6">
+
+            <!-- Encabezado superior -->
+            <View
+                android:id="@+id/topBanner"
+                android:layout_width="0dp"
+                android:layout_height="240dp"
+                android:background="#FF6B00"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Bienvenida personalizada -->
+            <TextView
+                android:id="@+id/tvWelcome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="90dp"
+                android:text="Bienvenido, Jaime"
+                android:textColor="@android:color/white"
+                android:textSize="34sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Tarjeta principal -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDashboard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginTop="180dp"
+                android:layout_marginBottom="32dp"
+                app:cardCornerRadius="28dp"
+                app:cardElevation="14dp"
+                app:cardBackgroundColor="@android:color/white"
+                app:strokeColor="#EAEAEA"
+                app:strokeWidth="1dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="28dp">
+
+                    <!-- Título -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dashboard Académico"
+                        android:textColor="#212121"
+                        android:textSize="28sp"
+                        android:textStyle="bold" />
+
+                    <!-- Descripción -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Aquí podrás consultar tu rendimiento académico, alertas y recomendaciones personalizadas."
+                        android:textColor="#757575"
+                        android:textSize="14sp" />
+
+                    <!-- Tarjeta del promedio -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardAverage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardBackgroundColor="#FFF8EE"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="2dp"
+                        app:strokeColor="#FFE0B2"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <!-- Título -->
+                            <TextView
+                                android:id="@+id/tvAverageTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Promedio General (Toca para ver materias)"
+                                android:textColor="#666666"
+                                android:textSize="14sp" />
+
+                            <!-- Nota -->
+                            <TextView
+                                android:id="@+id/tvAverage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="4.5"
+                                android:textColor="#2E7D32"
+                                android:textSize="36sp"
+                                android:textStyle="bold" />
+
+                            <!-- Estado -->
+                            <TextView
+                                android:id="@+id/tvAverageStatus"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Excelente rendimiento académico"
+                                android:textColor="#2E7D32"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+
+                            <!-- Separador -->
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="12dp"
+                                android:background="#EEEEEE" />
+
+                            <!-- Advertencia -->
+                            <TextView
+                                android:id="@+id/tvRiskWarning"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="⚠ Materias en Riesgo: 1"
+                                android:textColor="#D32F2F"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <!-- Detalle -->
+                            <TextView
+                                android:id="@+id/tvRiskDetail"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Revisa Fundamentos de Programación"
+                                android:textColor="#757575"
+                                android:textSize="12sp" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Tarjeta para consultar el pensum -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardPensum"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="#FFF8EE"
+                        app:strokeColor="#FFE0B2"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <!-- Título -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Pensum de Ingeniería de Sistemas"
+                                android:textColor="#212121"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <!-- Descripción -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:text="Consulta las materias y la estructura completa del programa académico."
+                                android:textColor="#757575"
+                                android:textSize="13sp" />
+
+                            <!-- Botón -->
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnViewPensum"
+                                android:layout_width="match_parent"
+                                android:layout_height="48dp"
+                                android:layout_marginTop="16dp"
+                                android:backgroundTint="#FF6B00"
+                                android:text="Ver Pensum"
+                                android:textAllCaps="false"
+                                android:textColor="@android:color/white"
+                                android:textStyle="bold"
+                                app:cornerRadius="14dp" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Botón cerrar sesión -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnLogout"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_marginTop="32dp"
+                        android:backgroundTint="#F5F5F5"
+                        android:text="Cerrar Sesión"
+                        android:textAllCaps="false"
+                        android:textColor="#757575"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="18dp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+    <!-- Widget Flotante del Asistente IA -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardAiAssistant"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#F4F7F6">
+        android:layout_margin="24dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Encabezado superior -->
-        <View
-            android:id="@+id/topBanner"
-            android:layout_width="0dp"
-            android:layout_height="240dp"
-            android:background="#FF6B00"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- Bienvenida personalizada -->
-        <TextView
-            android:id="@+id/tvWelcome"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="90dp"
-            android:text="Bienvenido, Jaime"
-            android:textColor="@android:color/white"
-            android:textSize="34sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:background="@drawable/bg_ai_widget"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingStart="20dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp">
 
-        <!-- Tarjeta principal -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardDashboard"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginTop="180dp"
-            android:layout_marginBottom="32dp"
-            app:cardCornerRadius="28dp"
-            app:cardElevation="14dp"
-            app:cardBackgroundColor="@android:color/white"
-            app:strokeColor="#EAEAEA"
-            app:strokeWidth="1dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="28dp">
+                android:text="🧠"
+                android:textSize="24sp" />
 
-                <!-- Título -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Dashboard Académico"
-                    android:textColor="#212121"
-                    android:textSize="28sp"
-                    android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="Preguntar a la IA"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
 
-                <!-- Descripción -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Aquí podrás consultar tu rendimiento académico, alertas y recomendaciones personalizadas."
-                    android:textColor="#757575"
-                    android:textSize="14sp" />
+        </LinearLayout>
 
-                <!-- Tarjeta del promedio -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    app:cardBackgroundColor="#FFF8EE"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="2dp"
-                    app:strokeColor="#FFE0B2"
-                    app:strokeWidth="1dp">
+    </com.google.android.material.card.MaterialCardView>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <!-- Título -->
-                        <TextView
-                            android:id="@+id/tvAverageTitle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Promedio General"
-                            android:textColor="#666666"
-                            android:textSize="14sp" />
-
-                        <!-- Nota -->
-                        <TextView
-                            android:id="@+id/tvAverage"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="4.5"
-                            android:textColor="#2E7D32"
-                            android:textSize="36sp"
-                            android:textStyle="bold" />
-
-                        <!-- Estado -->
-                        <TextView
-                            android:id="@+id/tvAverageStatus"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Excelente rendimiento académico"
-                            android:textColor="#2E7D32"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-
-                        <!-- Separador -->
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginBottom="12dp"
-                            android:background="#EEEEEE" />
-
-                        <!-- Advertencia -->
-                        <TextView
-                            android:id="@+id/tvRiskWarning"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="⚠ Materias en Riesgo: 1"
-                            android:textColor="#D32F2F"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-
-                        <!-- Detalle -->
-                        <TextView
-                            android:id="@+id/tvRiskDetail"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="Revisa Fundamentos de Programación"
-                            android:textColor="#757575"
-                            android:textSize="12sp" />
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Ejemplo de tarjeta de curso -->
-                <include
-                    android:id="@+id/courseCard"
-                    layout="@layout/item_course"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp" />
-                <!-- Tarjeta para consultar el pensum -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardPensum"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="#FFF8EE"
-                    app:strokeColor="#FFE0B2"
-                    app:strokeWidth="1dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <!-- Título -->
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Pensum de Ingeniería de Sistemas"
-                            android:textColor="#212121"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <!-- Descripción -->
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:text="Consulta las materias y la estructura completa del programa académico."
-                            android:textColor="#757575"
-                            android:textSize="13sp" />
-
-                        <!-- Botón -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnViewPensum"
-                            android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:layout_marginTop="16dp"
-                            android:backgroundTint="#FF6B00"
-                            android:text="Ver Pensum"
-                            android:textAllCaps="false"
-                            android:textColor="@android:color/white"
-                            android:textStyle="bold"
-                            app:cornerRadius="14dp" />
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-                <!-- Botón cerrar sesión -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnLogout"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginTop="32dp"
-                    android:backgroundTint="#FF6B00"
-                    android:text="Cerrar Sesión"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:cornerRadius="18dp" />
-
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

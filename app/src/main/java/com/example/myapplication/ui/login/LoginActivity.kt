@@ -1,9 +1,8 @@
 package com.example.myapplication.ui.login
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -25,7 +24,6 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var etEmail: TextInputEditText
     private lateinit var etPassword: TextInputEditText
     private lateinit var btnLogin: MaterialButton
-    private lateinit var progressBar: ProgressBar
     private lateinit var tvForgotPassword: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,7 +46,6 @@ class LoginActivity : AppCompatActivity() {
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
-        progressBar = findViewById(R.id.progressBar)
         tvForgotPassword = findViewById(R.id.tvForgotPassword)
 
         // Botón Iniciar Sesión
@@ -58,25 +55,40 @@ class LoginActivity : AppCompatActivity() {
 
         // Texto "¿Olvidaste tu contraseña?"
         tvForgotPassword.setOnClickListener {
-            Toast.makeText(
-                this,
-                "Funcionalidad disponible próximamente",
-                Toast.LENGTH_SHORT
-            ).show()
+            openUrl("https://correo.unab.edu.co/recuperarClave.jsp")
+        }
+    }
+
+    private fun openUrl(url: String) {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "No se pudo abrir el enlace", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun attemptLogin() {
-        val email = etEmail.text?.toString()?.trim().orEmpty()
+        val userInput = etEmail.text?.toString()?.trim().orEmpty()
         val password = etPassword.text?.toString().orEmpty()
+
+        // Si el usuario no ingresó el dominio, lo añadimos para la validación/lógica
+        val email = if (userInput.contains("@")) userInput else "$userInput@unab.edu.co"
 
         // Limpiar errores previos
         tilEmail.error = null
         tilPassword.error = null
 
-        // Validar correo
+        // Validar que el ID no esté vacío
+        if (userInput.isEmpty()) {
+            tilEmail.error = "Ingrese su ID de usuario"
+            etEmail.requestFocus()
+            return
+        }
+
+        // Validar correo completo
         if (!Validator.isValidEmail(email)) {
-            tilEmail.error = "Ingrese un correo válido"
+            tilEmail.error = "ID de usuario no válido"
             etEmail.requestFocus()
             return
         }
@@ -127,8 +139,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-
         // Habilitar o deshabilitar el botón
         btnLogin.isEnabled = !isLoading
 
