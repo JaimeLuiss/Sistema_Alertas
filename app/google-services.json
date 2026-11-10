@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "333866626267",
+    "project_id": "alertas-470d6",
+    "storage_bucket": "alertas-470d6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:333866626267:android:e564b647f38aa33165b0fe",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAS-BbxHSltrcp5bMrbNLb7yF8wwX9W4ns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
