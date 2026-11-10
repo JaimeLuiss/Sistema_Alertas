@@ -12,13 +12,15 @@ class SessionManager(context: Context) {
         private const val PREF_NAME = "unab_session"
         private const val KEY_IS_LOGGED_IN = "is_logged_in"
         private const val KEY_USER_EMAIL = "user_email"
+        private const val KEY_STUDENT_ID = "student_id"
     }
 
-    // Guardar sesión
-    fun saveLogin(email: String) {
+    // Guardar sesión ampliada con StudentID
+    fun saveLogin(email: String, studentId: String) {
         preferences.edit()
             .putBoolean(KEY_IS_LOGGED_IN, true)
             .putString(KEY_USER_EMAIL, email)
+            .putString(KEY_STUDENT_ID, studentId)
             .apply()
     }
 
@@ -30,6 +32,11 @@ class SessionManager(context: Context) {
     // Obtener correo guardado
     fun getUserEmail(): String? {
         return preferences.getString(KEY_USER_EMAIL, null)
+    }
+
+    // Obtener ID de estudiante guardado (U00000001, etc)
+    fun getStudentId(): String? {
+        return preferences.getString(KEY_STUDENT_ID, null)
     }
 
     // Cerrar sesión

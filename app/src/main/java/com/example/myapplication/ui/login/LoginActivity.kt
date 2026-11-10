@@ -3,6 +3,7 @@ package com.example.myapplication.ui.login
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -13,12 +14,17 @@ import com.example.myapplication.utils.Validator
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 
 class LoginActivity : AppCompatActivity() {
 
+    private lateinit var auth: FirebaseAuth
+    private lateinit var firestore: FirebaseFirestore
     private lateinit var sessionManager: SessionManager
 
-    // Referencias del layout activity_login.xml
     private lateinit var tilEmail: TextInputLayout
     private lateinit var tilPassword: TextInputLayout
     private lateinit var etEmail: TextInputEditText
@@ -29,31 +35,36 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Inicializar SessionManager
+        auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
         sessionManager = SessionManager(this)
 
-        // Si ya hay una sesión activa, ir directamente al MainActivity
-        if (sessionManager.isLoggedIn()) {
+        if (auth.currentUser != null && sessionManager.getStudentId() != null) {
+            Log.d("LoginActivity", "[DIAGNOSTIC] Sesión previa activa. User email: '${auth.currentUser?.email}', studentId: '${sessionManager.getStudentId()}'")
             navigateToMain()
             return
         }
 
         setContentView(R.layout.activity_login)
 
-        // Vincular vistas con los IDs definidos en activity_login.xml
+        bindViews()
+        configureActions()
+    }
+
+    private fun bindViews() {
         tilEmail = findViewById(R.id.tilEmail)
         tilPassword = findViewById(R.id.tilPassword)
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
         tvForgotPassword = findViewById(R.id.tvForgotPassword)
+    }
 
-        // Botón Iniciar Sesión
+    private fun configureActions() {
         btnLogin.setOnClickListener {
             attemptLogin()
         }
 
-        // Texto "¿Olvidaste tu contraseña?"
         tvForgotPassword.setOnClickListener {
             openUrl("https://correo.unab.edu.co/recuperarClave.jsp")
         }
@@ -71,84 +82,133 @@ class LoginActivity : AppCompatActivity() {
     private fun attemptLogin() {
         val userInput = etEmail.text?.toString()?.trim().orEmpty()
         val password = etPassword.text?.toString().orEmpty()
-
-        // Si el usuario no ingresó el dominio, lo añadimos para la validación/lógica
-        val email = if (userInput.contains("@")) userInput else "$userInput@unab.edu.co"
-
-        // Limpiar errores previos
+        val email = if (userInput.contains("@")) {
+            userInput
+        } else {
+            "$userInput@unab.edu.co"
+        }
         tilEmail.error = null
         tilPassword.error = null
-
-        // Validar que el ID no esté vacío
         if (userInput.isEmpty()) {
             tilEmail.error = "Ingrese su ID de usuario"
-            etEmail.requestFocus()
             return
         }
-
-        // Validar correo completo
         if (!Validator.isValidEmail(email)) {
             tilEmail.error = "ID de usuario no válido"
-            etEmail.requestFocus()
             return
         }
-
-        // Validar contraseña
-        if (!Validator.isValidPassword(password)) {
-            tilPassword.error = "La contraseña debe tener al menos 6 caracteres"
-            etPassword.requestFocus()
+        if (password.isEmpty()) {
+            tilPassword.error = "Ingrese su contraseña"
             return
         }
-
-        // Mostrar estado de carga
         showLoading(true)
+        Log.d("LoginActivity", "[DIAGNOSTIC] Intentando signInWithEmailAndPassword con email: '$email'")
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnSuccessListener {
+                Log.d("LoginActivity", "[DIAGNOSTIC] Auth exitoso para: '$email'")
+                fetchStudentData(email)
+            }
+            .addOnFailureListener { e ->
+                Log.w("LoginActivity", "[DIAGNOSTIC] Auth falló para '$email': ${e.message}")
+                when (e) {
+                    is FirebaseAuthInvalidUserException,
+                    is FirebaseAuthInvalidCredentialsException -> {
+                        // El usuario no pudo iniciar sesión.
+                        // Revisamos si existe como estudiante en Firestore.
+                        autoRegisterFromFirestore(email, password)
+                    }
+                    else -> {
+                        showLoading(false)
+                        Toast.makeText(
+                            this,
+                            "Error de autenticación: ${e.localizedMessage}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+    }
 
-        // Simular autenticación (1.5 segundos)
-        btnLogin.postDelayed({
+    private fun autoRegisterFromFirestore(email: String, password: String) {
+        Log.d("LoginActivity", "[DIAGNOSTIC] Intentando autoRegisterFromFirestore para email: '$email'")
+        firestore.collection("students")
+            .whereEqualTo("email", email)
+            .limit(1)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                if (snapshot.isEmpty) {
+                    showLoading(false)
+                    Log.e("LoginActivity", "[DIAGNOSTIC] ✗ Usuario no encontrado en 'students' con email: '$email'")
+                    Toast.makeText(this, "Este usuario no está registrado en la base de datos universitaria", Toast.LENGTH_LONG).show()
+                } else {
+                    val studentDoc = snapshot.documents[0]
+                    val studentId = studentDoc.id
+                    Log.d("LoginActivity", "[DIAGNOSTIC] ✓ Usuario encontrado en 'students'. Doc ID: '$studentId'. Creando cuenta Auth...")
+                    auth.createUserWithEmailAndPassword(email, password)
+                        .addOnSuccessListener {
+                            sessionManager.saveLogin(email, studentId)
+                            Log.d("LoginActivity", "[DIAGNOSTIC] ✓ Cuenta Auth creada. SessionManager guardó email: '$email', studentId: '$studentId'")
+                            Toast.makeText(this, "Cuenta activada correctamente", Toast.LENGTH_SHORT).show()
+                            navigateToMain()
+                        }
+                        .addOnFailureListener { e ->
+                            showLoading(false)
+                            Log.e("LoginActivity", "[DIAGNOSTIC] ✗ Fallo al crear cuenta Auth: ${e.message}", e)
+                            Toast.makeText(this, "No se pudo activar la cuenta: ${e.message}", Toast.LENGTH_LONG).show()
+                        }
+                }
+            }
+            .addOnFailureListener { e ->
+                showLoading(false)
+                Log.e("LoginActivity", "[DIAGNOSTIC] ✗ Error Firestore en autoRegisterFromFirestore: ${e.message}", e)
+                Toast.makeText(this, "Error de conexión con la base de datos", Toast.LENGTH_SHORT).show()
+            }
+    }
 
-            // Credenciales de prueba
-            val validEmail = "estudiante@unab.edu.co"
-            val validPassword = "123456"
+    private fun fetchStudentData(email: String) {
+        val currentUser = auth.currentUser
+        Log.d("LoginActivity", "[DIAGNOSTIC] fetchStudentData -> Auth uid: '${currentUser?.uid}', auth email: '${currentUser?.email}'")
+        Log.d("LoginActivity", "[DIAGNOSTIC] Buscando en Firestore 'students' con email: '$email'")
 
-            if (email.equals(validEmail, ignoreCase = true) &&
-                password == validPassword
-            ) {
-                // Guardar sesión
-                sessionManager.saveLogin(email)
-
-                Toast.makeText(
-                    this,
-                    "Bienvenido a Alertas Académicas",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                // Ir al MainActivity
-                navigateToMain()
-            } else {
-                // Restaurar UI
+        firestore.collection("students")
+            .whereEqualTo("email", email)
+            .limit(1)
+            .get()
+            .addOnSuccessListener { snapshot ->
                 showLoading(false)
 
+                if (snapshot.isEmpty) {
+                    Log.e("LoginActivity", "[DIAGNOSTIC] ✗ NO se encontró estudiante en 'students' con email: '$email'")
+                    auth.signOut()
+                    Toast.makeText(
+                        this,
+                        "Perfil no encontrado en Firestore",
+                        Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    val studentDoc = snapshot.documents[0]
+                    val studentId = studentDoc.id
+                    Log.d("LoginActivity", "[DIAGNOSTIC] ✓ Estudiante encontrado! Doc ID (studentId): '$studentId', Email doc: '${studentDoc.getString("email")}'")
+                    sessionManager.saveLogin(email, studentId)
+                    navigateToMain()
+                }
+            }
+            .addOnFailureListener { e ->
+                showLoading(false)
+                auth.signOut()
+                Log.e("LoginActivity", "[DIAGNOSTIC] ✗ Error Firestore en fetchStudentData: ${e.message}", e)
+
                 Toast.makeText(
                     this,
-                    "Credenciales incorrectas",
-                    Toast.LENGTH_SHORT
+                    "Error Firestore: ${e.message}",
+                    Toast.LENGTH_LONG
                 ).show()
             }
-
-        }, 1500)
     }
 
     private fun showLoading(isLoading: Boolean) {
-        // Habilitar o deshabilitar el botón
         btnLogin.isEnabled = !isLoading
-
-        if (isLoading) {
-            btnLogin.text = "Validando..."
-            btnLogin.alpha = 0.7f
-        } else {
-            btnLogin.text = "Iniciar Sesión"
-            btnLogin.alpha = 1.0f
-        }
+        btnLogin.text = if (isLoading) "Validando..." else "Iniciar Sesión"
     }
 
     private fun navigateToMain() {

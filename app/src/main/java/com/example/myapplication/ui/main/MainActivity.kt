@@ -9,21 +9,27 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.myapplication.R
 import com.example.myapplication.data.academic.AcademicRepository
 import com.example.myapplication.data.academic.RiskLevel
+import com.example.myapplication.data.academic.StudentDashboard
 import com.example.myapplication.ui.login.LoginActivity
 import com.example.myapplication.utils.Animations
 import com.example.myapplication.utils.SessionManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var auth: FirebaseAuth
     private lateinit var sessionManager: SessionManager
     private val academicRepository = AcademicRepository()
+    private var cachedDashboard: StudentDashboard? = null
     
     // UI Elements
     private lateinit var tvWelcome: TextView
@@ -42,10 +48,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        auth = FirebaseAuth.getInstance()
         sessionManager = SessionManager(this)
 
         bindViews()
-        renderDashboard()
+        loadDashboardData()
         configureActions()
         
         // Aplicar animaciones de entrada
@@ -66,30 +73,35 @@ class MainActivity : AppCompatActivity() {
         cardAiAssistant = findViewById(R.id.cardAiAssistant)
     }
 
-    private fun renderDashboard() {
+    private fun loadDashboardData() {
         val email = sessionManager.getUserEmail() ?: "estudiante@unab.edu.co"
-        val dashboard = academicRepository.getDashboardFor(email)
-        val userName = email.substringBefore("@")
-            .replaceFirstChar { it.uppercase() }
-
+        val studentId = sessionManager.getStudentId() ?: ""
+        
+        val userName = email.substringBefore("@").replaceFirstChar { it.uppercase() }
         tvWelcome.text = "Bienvenido, $userName"
 
-        val average = dashboard.averageGrade()
-        val riskCourses = dashboard.courses.filter { it.riskLevel != RiskLevel.LOW }
-        val overallRisk = dashboard.overallRisk()
-        val riskColor = Color.parseColor(overallRisk.color)
+        lifecycleScope.launch {
+            val dashboard = academicRepository.getDashboardFor(email, studentId)
+            cachedDashboard = dashboard
+            
+            val average = dashboard.averageGrade()
+            val riskCourses = dashboard.courses.filter { it.riskLevel != RiskLevel.LOW }
+            val overallRisk = dashboard.overallRisk()
+            val riskColor = Color.parseColor(overallRisk.color)
 
-        tvAverage.text = String.format(Locale.US, "%.1f", average)
-        tvAverage.setTextColor(riskColor)
-        tvAverageStatus.text = overallRisk.summary
-        tvAverageStatus.setTextColor(riskColor)
-        tvRiskWarning.text = "Materias en Riesgo: ${riskCourses.size}"
-        tvRiskWarning.setTextColor(if (riskCourses.isEmpty()) Color.parseColor("#2E7D32") else riskColor)
-        
-        tvRiskDetail.text = if (riskCourses.isEmpty()) {
-            "¡Excelente trabajo! No tienes alertas."
-        } else {
-            "Tienes ${riskCourses.size} materias que requieren atención."
+            tvAverage.text = String.format(Locale.US, "%.1f", average)
+            tvAverage.setTextColor(riskColor)
+            tvAverageStatus.text = overallRisk.summary
+            tvAverageStatus.setTextColor(riskColor)
+            tvRiskWarning.text = "Materias en Riesgo: ${riskCourses.size}"
+            tvRiskWarning.setTextColor(if (riskCourses.isEmpty()) Color.parseColor("#2E7D32") else riskColor)
+            
+            tvRiskDetail.text = if (riskCourses.isEmpty()) {
+                "¡Excelente trabajo! No tienes alertas."
+            } else {
+                "Tienes ${riskCourses.size} materias que requieren atención."
+            }
+            cardAiAssistant.visibility = View.VISIBLE
         }
     }
 
@@ -104,6 +116,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnLogout.setOnClickListener {
+            auth.signOut()
             sessionManager.logout()
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
@@ -122,34 +135,41 @@ class MainActivity : AppCompatActivity() {
     private fun showAiBottomSheet() {
         val dialog = BottomSheetDialog(this)
         val view = layoutInflater.inflate(R.layout.bottom_sheet_ai, null)
-        
+
         val tvAiResponse = view.findViewById<TextView>(R.id.tvAiResponse)
         val cardAiResponse = view.findViewById<MaterialCardView>(R.id.cardAiResponse)
         
         val email = sessionManager.getUserEmail() ?: "estudiante@unab.edu.co"
-        val dashboard = academicRepository.getDashboardFor(email)
-        val riskCourses = dashboard.courses.filter { it.riskLevel != RiskLevel.LOW }
+        val studentId = sessionManager.getStudentId() ?: ""
 
-        view.findViewById<MaterialButton>(R.id.btnQuestionRisk).setOnClickListener {
-            val response = if (riskCourses.isEmpty()) {
-                "Actualmente no presentas riesgos académicos. Tu promedio de ${String.format("%.1f", dashboard.averageGrade())} es sólido. ¡Sigue así!"
-            } else {
-                "Estás en riesgo principalmente en ${riskCourses.first().name} debido a una nota de ${riskCourses.first().grade} y asistencia del ${riskCourses.first().attendance}%."
+        lifecycleScope.launch {
+            val dashboard = cachedDashboard ?: academicRepository.getDashboardFor(email, studentId).also {
+                cachedDashboard = it
             }
-            showAiResponse(tvAiResponse, cardAiResponse, response)
-        }
+            val riskCourses = dashboard.courses.filter { it.riskLevel != RiskLevel.LOW }
 
-        view.findViewById<MaterialButton>(R.id.btnQuestionImprove).setOnClickListener {
-            showAiResponse(tvAiResponse, cardAiResponse, "Para mejorar tu promedio de ${String.format("%.1f", dashboard.averageGrade())}, te sugiero priorizar las materias de 4 créditos como Cálculo Diferencial.")
-        }
+            view.findViewById<MaterialButton>(R.id.btnQuestionRisk).setOnClickListener {
+                val response = if (riskCourses.isEmpty()) {
+                    "Actualmente no presentas riesgos académicos. Tu promedio de ${String.format(Locale.US, "%.1f", dashboard.averageGrade())} es sólido. ¡Sigue así!"
+                } else {
+                    "Estás en riesgo principalmente en ${riskCourses.first().name} debido a una nota de ${riskCourses.first().grade}."
+                }
+                showAiResponse(tvAiResponse, cardAiResponse, response)
+            }
 
-        view.findViewById<MaterialButton>(R.id.btnQuestionAttention).setOnClickListener {
-            val target = riskCourses.maxByOrNull { it.riskLevel.priority } ?: dashboard.courses.minBy { it.grade }
-            showAiResponse(tvAiResponse, cardAiResponse, "La materia que requiere atención inmediata es ${target.name}. Es la que más está afectando tu desempeño actual.")
-        }
+            view.findViewById<MaterialButton>(R.id.btnQuestionImprove).setOnClickListener {
+                showAiResponse(tvAiResponse, cardAiResponse, "Para mejorar tu promedio de ${String.format(Locale.US, "%.1f", dashboard.averageGrade())}, te sugiero priorizar las materias con mayor carga de créditos.")
+            }
 
-        view.findViewById<MaterialButton>(R.id.btnQuestionMath).setOnClickListener {
-            showAiResponse(tvAiResponse, cardAiResponse, "Para aprobar Fundamentos de Programación con 3.0, necesitas obtener al menos un 3.5 en el examen final (40%).")
+            view.findViewById<MaterialButton>(R.id.btnQuestionAttention).setOnClickListener {
+                val target = riskCourses.maxByOrNull { it.riskLevel.priority } ?: dashboard.courses.minByOrNull { it.grade }
+                val targetName = target?.name ?: "N/A"
+                showAiResponse(tvAiResponse, cardAiResponse, "La materia que requiere atención inmediata es $targetName.")
+            }
+
+            view.findViewById<MaterialButton>(R.id.btnQuestionMath).setOnClickListener {
+                showAiResponse(tvAiResponse, cardAiResponse, "El cálculo de aprobación depende del peso de los cortes restantes en tu materia más crítica.")
+            }
         }
 
         dialog.setContentView(view)
