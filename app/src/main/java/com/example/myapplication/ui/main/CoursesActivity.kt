@@ -8,11 +8,13 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.R
 import com.example.myapplication.data.academic.AcademicRepository
 import com.example.myapplication.utils.SessionManager
+import kotlinx.coroutines.launch
 
 class CoursesActivity : AppCompatActivity() {
 
@@ -50,21 +52,25 @@ class CoursesActivity : AppCompatActivity() {
 
     private fun renderCourses() {
         val email = sessionManager.getUserEmail() ?: "estudiante@unab.edu.co"
-        val dashboard = academicRepository.getDashboardFor(email)
+        val studentId = sessionManager.getStudentId() ?: ""
 
-        val adapter = CourseAdapter(
-            courses = dashboard.courses,
-            onGradesClick = { course ->
-                showAlertDialog("Detalle de Notas: ${course.name}", 
-                    "Nota actual: ${course.grade}\nAsistencia: ${course.attendance}%\n\nEl detalle por cortes estará disponible pronto.")
-            },
-            onWellnessClick = { 
-                openUrl("https://bienestar.unab.edu.co/servicios/pregrado-acompanamiento/")
-            }
-        )
-        
-        rvCourses.layoutManager = LinearLayoutManager(this)
-        rvCourses.adapter = adapter
+        lifecycleScope.launch {
+            val dashboard = academicRepository.getDashboardFor(email, studentId)
+
+            val adapter = CourseAdapter(
+                courses = dashboard.courses,
+                onGradesClick = { course ->
+                    showAlertDialog("Detalle de Notas: ${course.name}", 
+                        "Nota actual: ${course.grade}\nAsistencia: ${course.attendance}%\n\nEl detalle por cortes estará disponible pronto.")
+                },
+                onWellnessClick = { 
+                    openUrl("https://bienestar.unab.edu.co/servicios/pregrado-acompanamiento/")
+                }
+            )
+            
+            rvCourses.layoutManager = LinearLayoutManager(this@CoursesActivity)
+            rvCourses.adapter = adapter
+        }
     }
 
     private fun openUrl(url: String) {

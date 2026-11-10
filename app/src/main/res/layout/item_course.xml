@@ -98,26 +98,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnAiRecommendation"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:backgroundTint="#F8F9FF"
-                android:text="Consultar Recomendación IA 🧠"
-                android:textAllCaps="false"
-                android:textColor="#3F51B5"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:cornerRadius="16dp"
-                app:iconGravity="textStart"
-                app:iconPadding="12dp"
-                app:iconTint="#3F51B5"
-                app:strokeColor="#E8EAF6"
-                app:strokeWidth="1dp" />
-
-        </FrameLayout>
+            android:layout_marginTop="16dp"/>
 
         <!-- Recomendación IA (Inicialmente oculta) -->
         <com.google.android.material.card.MaterialCardView
